@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ChatApp</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string-array name="categories">
+        <item>Movies</item>
+        <item>Music</item>
+        <item>Sports</item>
+    </string-array>
+</resources>

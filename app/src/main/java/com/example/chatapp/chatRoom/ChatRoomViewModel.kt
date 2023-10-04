@@ -1,0 +1,75 @@
+package com.example.chatapp.chatRoom
+
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import com.example.chatapp.DataUtils
+import com.example.chatapp.database.firestore.addMessageToFirestoreDB
+import com.example.chatapp.database.firestore.getMessagesFromFirestoreDB
+import com.example.chatapp.database.model.Message
+import com.example.chatapp.database.model.Room
+import com.google.firebase.firestore.DocumentChange
+import com.google.gson.Gson
+import java.util.Date
+
+class ChatRoomViewModel : ViewModel() {
+    var room: Room? = null
+    val messageFieldState = mutableStateOf("")
+    val messagesListState = mutableStateOf<List<Message>>(listOf())
+
+    fun formJsonToRoom(room: String): Room {
+        val gson = Gson().newBuilder().create()
+        return gson.fromJson(room, Room::class.java)
+    }
+
+    fun addMessageToFirestore() {
+        if (messageFieldState.value.isEmpty() || messageFieldState.value.isBlank())
+            return
+        val message = Message(
+            content = messageFieldState.value,
+            timeDate = Date().time,
+            senderId = DataUtils.user?.id,
+            senderName = DataUtils.user?.name,
+            roomId = room?.roomId
+        )
+
+        addMessageToFirestoreDB(
+            roomId = room?.roomId!!, message,
+            onSuccessListener = {
+                messageFieldState.value = ""
+            },
+            onFailureListener = {
+                Log.e("Tag", it.localizedMessage)
+            })
+
+    }
+
+
+    fun getMessagesFromFirestore() {
+        getMessagesFromFirestoreDB(roomId = room?.roomId!!, listener = { snapshots, e ->
+            if (e != null) {
+                Log.e("Tag", "${e.message}")
+                return@getMessagesFromFirestoreDB
+            }
+            val mutableList = mutableListOf<Message>()
+            for (dc in snapshots!!.documentChanges) {
+                when (dc.type) {
+                    DocumentChange.Type.ADDED -> {
+                        mutableList.add(dc.document.toObject(Message::class.java))
+                    }
+
+                    else -> {}
+                }
+            }
+
+            val newList = mutableListOf<Message>()
+            newList.addAll(mutableList)
+            newList.addAll(messagesListState.value)
+            messagesListState.value=newList
+
+        })
+    }
+
+}
