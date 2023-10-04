@@ -1,12 +1,10 @@
 package com.example.chatapp.splash
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -20,9 +18,11 @@ fun SplashScreen(viewModel: SplashViewModel, navController: NavHostController) {
     SplashContent()
     viewModel.checkUser()
     when (viewModel.events.value) {
-        ChatScreens.LoginScreen -> navController.navigate(ChatScreens.LoginScreen.name)
-            else -> navController.navigate(ChatScreens.HomeScreen.name)
-        }
+        ChatScreens.LoginScreen ->
+            navController.navigate(ChatScreens.LoginScreen.name)
+        else ->
+            navController.navigate(ChatScreens.HomeScreen.name)
+    }
 
 }
 

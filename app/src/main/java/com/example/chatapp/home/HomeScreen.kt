@@ -1,5 +1,7 @@
 package com.example.chatapp.home
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -61,7 +64,7 @@ fun HomeContent(viewModel: HomeViewModel, navController: NavHostController) {
             floatingActionButton = { FAB(navController) }) {
             Column(modifier = Modifier.padding(paddingValues = it)) {
                 Tabs(viewModel)
-                RoomsContent(viewModel,navController)
+                RoomsContent(viewModel, navController)
                 LoadingDialog(showLoadingState = viewModel.showLoading)
             }
         }
@@ -69,15 +72,21 @@ fun HomeContent(viewModel: HomeViewModel, navController: NavHostController) {
 }
 
 @Composable
-fun RoomsContent(viewModel: HomeViewModel,navController: NavHostController) {
+fun RoomsContent(viewModel: HomeViewModel, navController: NavHostController) {
+    val activity = LocalContext.current as Activity
+    BackHandler {
+        activity.moveTaskToBack(true)
+    }
     viewModel.getRoomsFromFirestore()
     LazyVerticalGrid(columns = GridCells.Fixed(2)) {
         items(viewModel.roomsList.value.size) { item ->
-            CardItem(viewModel.roomsList.value[item]){
+            CardItem(viewModel.roomsList.value[item]) {
                 navController.currentBackStackEntry?.savedStateHandle?.apply {
-                    set("room",viewModel.roomsList.value[item])
+                    set("room", viewModel.roomsList.value[item])
                 }
-                navController.navigate(ChatScreens.ChatRoomScreen.name)
+                navController.navigate(ChatScreens.ChatRoomScreen.name) {
+                    popUpTo(ChatScreens.HomeScreen.name) { inclusive}
+                }
             }
         }
 
@@ -85,7 +94,7 @@ fun RoomsContent(viewModel: HomeViewModel,navController: NavHostController) {
 }
 
 @Composable
-fun CardItem(room: Room,onClick:()->Unit) {
+fun CardItem(room: Room, onClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         modifier = Modifier
@@ -150,7 +159,8 @@ fun FAB(navController: NavHostController) {
 @Composable
 fun Tabs(viewModel: HomeViewModel) {
     val tabsList = listOf("My Rooms", "Browse")
-    TabRow(modifier = Modifier.padding(20.dp), selectedTabIndex = viewModel.selectedTabIndex.intValue,
+    TabRow(modifier = Modifier.padding(20.dp),
+        selectedTabIndex = viewModel.selectedTabIndex.intValue,
         containerColor = Color.Transparent,
         contentColor = Color.White,
         indicator = { tabPositions ->

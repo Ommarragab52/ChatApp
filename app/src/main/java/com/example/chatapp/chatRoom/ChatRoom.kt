@@ -179,7 +179,7 @@ fun ReceivedMessageCard(message: Message) {
 
 }
 
-@Composable()
+@Composable
 fun SendMessageBox(viewModel: ChatRoomViewModel) {
     Row(
         modifier = Modifier
