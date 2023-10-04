@@ -1,8 +1,6 @@
 package com.example.chatapp.chatRoom
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.chatapp.DataUtils
@@ -11,7 +9,6 @@ import com.example.chatapp.database.firestore.getMessagesFromFirestoreDB
 import com.example.chatapp.database.model.Message
 import com.example.chatapp.database.model.Room
 import com.google.firebase.firestore.DocumentChange
-import com.google.gson.Gson
 import java.util.Date
 
 class ChatRoomViewModel : ViewModel() {
@@ -19,10 +16,6 @@ class ChatRoomViewModel : ViewModel() {
     val messageFieldState = mutableStateOf("")
     val messagesListState = mutableStateOf<List<Message>>(listOf())
 
-    fun formJsonToRoom(room: String): Room {
-        val gson = Gson().newBuilder().create()
-        return gson.fromJson(room, Room::class.java)
-    }
 
     fun addMessageToFirestore() {
         if (messageFieldState.value.isEmpty() || messageFieldState.value.isBlank())
@@ -41,7 +34,6 @@ class ChatRoomViewModel : ViewModel() {
                 messageFieldState.value = ""
             },
             onFailureListener = {
-                Log.e("Tag", it.localizedMessage)
             })
 
     }
@@ -67,7 +59,7 @@ class ChatRoomViewModel : ViewModel() {
             val newList = mutableListOf<Message>()
             newList.addAll(mutableList)
             newList.addAll(messagesListState.value)
-            messagesListState.value=newList
+            messagesListState.value = newList
 
         })
     }

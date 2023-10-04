@@ -3,11 +3,9 @@ package com.example.chatapp.navigation
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.chatapp.addRoom.AddRoomContent
 import com.example.chatapp.addRoom.AddRoomViewModel
 import com.example.chatapp.chatRoom.ChatRoomContent
@@ -46,16 +44,9 @@ fun ChatNavigation() {
             val viewModel: AddRoomViewModel = viewModel()
             AddRoomContent(viewModel, navController)
         }
-        composable(route = "${ChatScreens.ChatRoomScreen.name}/{room}",
-            arguments = listOf(navArgument("room")
-            {
-                type = NavType.StringType
-            }
-            )) {
+        composable(route = ChatScreens.ChatRoomScreen.name) {
             val viewModel: ChatRoomViewModel = viewModel()
-            val roomJson = it.arguments?.getString("room")
-            ChatRoomContent(viewModel = viewModel, navController = navController, roomJson!!)
-
+            ChatRoomContent(viewModel = viewModel, navController = navController)
         }
     }
 }

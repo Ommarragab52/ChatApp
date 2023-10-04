@@ -74,8 +74,10 @@ fun RoomsContent(viewModel: HomeViewModel,navController: NavHostController) {
     LazyVerticalGrid(columns = GridCells.Fixed(2)) {
         items(viewModel.roomsList.value.size) { item ->
             CardItem(viewModel.roomsList.value[item]){
-                val roomJson =  viewModel.convertToJson(viewModel.roomsList.value[item])
-                navController.navigate("${ChatScreens.ChatRoomScreen.name}/$roomJson")
+                navController.currentBackStackEntry?.savedStateHandle?.apply {
+                    set("room",viewModel.roomsList.value[item])
+                }
+                navController.navigate(ChatScreens.ChatRoomScreen.name)
             }
         }
 
@@ -148,13 +150,13 @@ fun FAB(navController: NavHostController) {
 @Composable
 fun Tabs(viewModel: HomeViewModel) {
     val tabsList = listOf("My Rooms", "Browse")
-    TabRow(modifier = Modifier.padding(20.dp), selectedTabIndex = viewModel.selectedTabIndex.value,
+    TabRow(modifier = Modifier.padding(20.dp), selectedTabIndex = viewModel.selectedTabIndex.intValue,
         containerColor = Color.Transparent,
         contentColor = Color.White,
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
                 modifier = Modifier.tabIndicatorOffset(
-                    tabPositions[viewModel.selectedTabIndex.value]
+                    tabPositions[viewModel.selectedTabIndex.intValue]
                 ), height = 3.dp,
                 color = Color.White
             )
@@ -162,9 +164,9 @@ fun Tabs(viewModel: HomeViewModel) {
         divider = {}
     ) {
         tabsList.forEachIndexed { index, title ->
-            Tab(selected = viewModel.selectedTabIndex.value == index,
+            Tab(selected = viewModel.selectedTabIndex.intValue == index,
                 onClick = {
-                    viewModel.selectedTabIndex.value = index
+                    viewModel.selectedTabIndex.intValue = index
                     when (index) {
                         0 -> {}
                         1 -> {}

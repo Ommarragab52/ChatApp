@@ -40,17 +40,16 @@ import com.example.chatapp.DataUtils
 import com.example.chatapp.R
 import com.example.chatapp.component.AppBar
 import com.example.chatapp.database.model.Message
+import com.example.chatapp.database.model.Room
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
 fun ChatRoomContent(
     viewModel: ChatRoomViewModel,
-    navController: NavHostController,
-    roomJson: String
+    navController: NavHostController
 ) {
-    viewModel.room = viewModel.formJsonToRoom(roomJson)
-
+    viewModel.room = navController.previousBackStackEntry?.savedStateHandle?.get<Room>("room")
     Box(
         modifier = Modifier
             .fillMaxSize()
